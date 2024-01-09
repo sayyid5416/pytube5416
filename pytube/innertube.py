@@ -220,7 +220,7 @@ _token_file = os.path.join(_cache_dir, 'pytube-tokens.json')
 
 class InnerTube:
     """Object for interacting with the innertube API."""
-    def __init__(self, client='ANDROID_MUSIC', use_oauth=False, allow_cache=True, cache_location=None):
+    def __init__(self, client='ANDROID', use_oauth=False, allow_cache=True, cache_location=None):
         """Initialize an InnerTube object.
 
         :param str client:
