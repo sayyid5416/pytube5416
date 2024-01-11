@@ -32,7 +32,8 @@ class YouTube:
         proxies: Dict[str, str] = None,
         use_oauth: bool = False,
         allow_oauth_cache: bool = True,
-        cache_location: str = None
+        cache_location: str = None,
+        outh_verifier: Callable[[str, str], None]|None=None
     ):
         """Construct a :class:`YouTube <YouTube>`.
 
@@ -55,6 +56,10 @@ class YouTube:
         :param str cache_location:
             (Optional) Directory path where oauth-tokens file will be cached (if passed, else default path will be used)
             These tokens are only cached if use_oauth and allow_oauth_cache is set to True as well.
+        :param Callable outh_verifier:
+            (optional) Verifier to be used for getting outh tokens. 
+            Verification URL and User-Code will be passed to it respectively.
+            (if passed, else default verifier will be used)
         """
         self._js: Optional[str] = None  # js fetched by js_url
         self._js_url: Optional[str] = None  # the url to the js, parsed from watch html
@@ -92,6 +97,7 @@ class YouTube:
         self.use_oauth = use_oauth
         self.allow_oauth_cache = allow_oauth_cache
         self.cache_location = cache_location
+        self.outh_verifier = outh_verifier
 
     def __repr__(self):
         return f'<pytube.__main__.YouTube object: videoId={self.video_id}>'
@@ -247,7 +253,12 @@ class YouTube:
         if self._vid_info:
             return self._vid_info
 
-        innertube = InnerTube(use_oauth=self.use_oauth, allow_cache=self.allow_oauth_cache, cache_location=self.cache_location)
+        innertube = InnerTube(
+            use_oauth=self.use_oauth,
+            allow_cache=self.allow_oauth_cache,
+            cache_location=self.cache_location,
+            outh_verifier=self.outh_verifier
+        )
 
         innertube_response = innertube.player(self.video_id)
         self._vid_info = innertube_response
@@ -259,7 +270,8 @@ class YouTube:
             client='ANDROID_EMBED',
             use_oauth=self.use_oauth,
             allow_cache=self.allow_oauth_cache,
-            cache_location = self.cache_location
+            cache_location = self.cache_location,
+            outh_verifier=self.outh_verifier
         )
         innertube_response = innertube.player(self.video_id)
 
