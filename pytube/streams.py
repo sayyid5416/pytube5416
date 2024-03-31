@@ -11,7 +11,7 @@ import os
 from math import ceil
 
 from datetime import datetime
-from typing import BinaryIO, Dict, Optional, Tuple
+from typing import BinaryIO, Callable, Dict, Optional, Tuple
 from urllib.error import HTTPError
 from urllib.parse import parse_qs
 
@@ -262,7 +262,8 @@ class Stream:
         filename_prefix: Optional[str] = None,
         skip_existing: bool = True,
         timeout: Optional[int] = None,
-        max_retries: Optional[int] = 0
+        max_retries: Optional[int] = 0,
+        interrupt_checker: Optional[Callable[[], bool]] = None
     ) -> str:
         """Write the media stream to disk.
 
@@ -290,6 +291,10 @@ class Stream:
         :param max_retries:
             (optional) Number of retries to attempt after socket timeout. Defaults to 0.
         :type max_retries: int
+        :param interrupt_checker:
+            (optional) A Callable which would be checked time to time during downloading. 
+            If it returns True, download process will be stopped immediately 
+            without giving any errors. Defaults to None.
         :returns:
             Path to the saved video
         :rtype: str
@@ -316,6 +321,9 @@ class Stream:
                     timeout=timeout,
                     max_retries=max_retries
                 ):
+                    if interrupt_checker is not None and interrupt_checker() == True:
+                        logger.debug('interrupt_checker returned True, causing to force stop the downloading')
+                        return
                     # reduce the (bytes) remainder by the length of the chunk.
                     bytes_remaining -= len(chunk)
                     # send to the on_progress callback.
@@ -329,6 +337,9 @@ class Stream:
                     timeout=timeout,
                     max_retries=max_retries
                 ):
+                    if interrupt_checker is not None and interrupt_checker() == True:
+                        logger.debug('interrupt_checker returned True, causing to force stop the downloading')
+                        return
                     # reduce the (bytes) remainder by the length of the chunk.
                     bytes_remaining -= len(chunk)
                     # send to the on_progress callback.

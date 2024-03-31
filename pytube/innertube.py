@@ -9,6 +9,7 @@ import json
 import os
 import pathlib
 import time
+from typing import Callable
 from urllib import parse
 
 # Local imports
@@ -215,12 +216,18 @@ _default_clients = {
 }
 _token_timeout = 1800
 _cache_dir = pathlib.Path(__file__).parent.resolve() / '__cache__'
-_token_file = os.path.join(_cache_dir, 'tokens.json')
+_token_file = os.path.join(_cache_dir, 'pytube-tokens.json')
+
+
+def _default_outh_verifier(verification_url: str, user_code: str):
+    """ Default `print(...)` and `input(...)` for outh verification """
+    print(f'Please open {verification_url} and input code {user_code}')
+    input('Press enter when you have completed this step.')
 
 
 class InnerTube:
     """Object for interacting with the innertube API."""
-    def __init__(self, client='ANDROID_MUSIC', use_oauth=False, allow_cache=True):
+    def __init__(self, client='ANDROID_MUSIC', use_oauth=False, allow_cache=True, cache_location=None, outh_verifier: Callable[[str, str], None]|None=None):
         """Initialize an InnerTube object.
 
         :param str client:
@@ -230,6 +237,10 @@ class InnerTube:
             Whether or not to authenticate to YouTube.
         :param bool allow_cache:
             Allows caching of oauth tokens on the machine.
+        :param str cache_location:
+            Directory path where oauth-tokens file will be cached (if passed, else default path will be used)
+        :param Callable outh_verifier:
+            Verifier to be used for getting outh tokens. Verification URL and User-Code will be passed to it respectively. (if passed, else default verifier will be used)
         """
         self.context = _default_clients[client]['context']
         self.header = _default_clients[client]['header']
@@ -238,6 +249,11 @@ class InnerTube:
         self.refresh_token = None
         self.use_oauth = use_oauth
         self.allow_cache = allow_cache
+        self.outh_verifier = outh_verifier or _default_outh_verifier
+        
+        # cache dir
+        self._cacheDir = cache_location or _cache_dir
+        self._tokenFile = os.path.join(self._cacheDir, 'pytube-tokens.json')
 
         # Stored as epoch time
         self.expires = None
@@ -245,8 +261,8 @@ class InnerTube:
         # Try to load from file if specified
         if self.use_oauth and self.allow_cache:
             # Try to load from file if possible
-            if os.path.exists(_token_file):
-                with open(_token_file) as f:
+            if os.path.exists(self._tokenFile):
+                with open(self._tokenFile) as f:
                     data = json.load(f)
                     self.access_token = data['access_token']
                     self.refresh_token = data['refresh_token']
@@ -263,9 +279,9 @@ class InnerTube:
             'refresh_token': self.refresh_token,
             'expires': self.expires
         }
-        if not os.path.exists(_cache_dir):
-            os.mkdir(_cache_dir)
-        with open(_token_file, 'w') as f:
+        if not os.path.exists(self._cacheDir):
+            os.mkdir(self._cacheDir)
+        with open(self._tokenFile, 'w') as f:
             json.dump(data, f)
 
     def refresh_bearer_token(self, force=False):
@@ -321,8 +337,7 @@ class InnerTube:
         response_data = json.loads(response.read())
         verification_url = response_data['verification_url']
         user_code = response_data['user_code']
-        print(f'Please open {verification_url} and input code {user_code}')
-        input('Press enter when you have completed this step.')
+        self.outh_verifier(verification_url, user_code)
 
         data = {
             'client_id': _client_id,
