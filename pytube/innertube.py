@@ -227,7 +227,7 @@ def _default_outh_verifier(verification_url: str, user_code: str):
 
 class InnerTube:
     """Object for interacting with the innertube API."""
-    def __init__(self, client='ANDROID', use_oauth=False, allow_cache=True, cache_location=None, outh_verifier: Callable[[str, str], None]|None=None):
+    def __init__(self, client='ANDROID_EMBED', use_oauth=False, allow_cache=True, cache_location=None, outh_verifier: Callable[[str, str], None]|None=None):
         """Initialize an InnerTube object.
 
         :param str client:
