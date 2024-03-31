@@ -267,7 +267,7 @@ class YouTube:
     def bypass_age_gate(self):
         """Attempt to update the vid_info by bypassing the age gate."""
         innertube = InnerTube(
-            client='ANDROID_MUSIC',
+            client='ANDROID_EMBED',
             use_oauth=self.use_oauth,
             allow_cache=self.allow_oauth_cache,
             cache_location = self.cache_location,
