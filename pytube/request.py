@@ -192,6 +192,7 @@ def stream(
                 break
             downloaded += len(chunk)
             yield chunk
+            
     return  # pylint: disable=R1711
 
 
