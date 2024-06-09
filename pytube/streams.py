@@ -321,6 +321,7 @@ class Stream:
                     timeout=timeout,
                     max_retries=max_retries
                 ):
+                    # Check interruptor
                     if interrupt_checker is not None and interrupt_checker() == True:
                         logger.debug('interrupt_checker returned True, causing to force stop the downloading')
                         return
@@ -337,6 +338,7 @@ class Stream:
                     timeout=timeout,
                     max_retries=max_retries
                 ):
+                    # Check interruptor
                     if interrupt_checker is not None and interrupt_checker() == True:
                         logger.debug('interrupt_checker returned True, causing to force stop the downloading')
                         return
