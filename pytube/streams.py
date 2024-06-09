@@ -321,14 +321,11 @@ class Stream:
                     timeout=timeout,
                     max_retries=max_retries
                 ):
-                    # Check interruptor
-                    if interrupt_checker is not None and interrupt_checker() == True:
+                    if interrupt_checker is not None and interrupt_checker() == True:                                   # Check interruptor
                         logger.debug('interrupt_checker returned True, causing to force stop the downloading')
                         return
-                    # reduce the (bytes) remainder by the length of the chunk.
-                    bytes_remaining -= len(chunk)
-                    # send to the on_progress callback.
-                    self.on_progress(chunk, fh, bytes_remaining)
+                    bytes_remaining -= len(chunk)                                                                       # reduce the (bytes) remainder by the length of the chunk.
+                    self.on_progress(chunk, fh, bytes_remaining)                                                        # send to the on_progress callback.
             except HTTPError as e:
                 if e.code != 404:
                     raise
@@ -338,14 +335,12 @@ class Stream:
                     timeout=timeout,
                     max_retries=max_retries
                 ):
-                    # Check interruptor
-                    if interrupt_checker is not None and interrupt_checker() == True:
+                    if interrupt_checker is not None and interrupt_checker() == True:                                   # Check interruptor
                         logger.debug('interrupt_checker returned True, causing to force stop the downloading')
                         return
-                    # reduce the (bytes) remainder by the length of the chunk.
-                    bytes_remaining -= len(chunk)
-                    # send to the on_progress callback.
-                    self.on_progress(chunk, fh, bytes_remaining)
+                    bytes_remaining -= len(chunk)                                                                       # reduce the (bytes) remainder by the length of the chunk.
+                    self.on_progress(chunk, fh, bytes_remaining)                                                        # send to the on_progress callback.
+        
         self.on_complete(file_path)
         return file_path
 
