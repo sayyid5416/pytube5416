@@ -185,6 +185,7 @@ def stream(
                 file_size = int(content_range)
             except (KeyError, IndexError, ValueError) as e:
                 logger.error(e)
+        
         while True:
             chunk = response.read()
             if not chunk:
