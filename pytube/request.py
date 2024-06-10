@@ -127,6 +127,7 @@ def seq_stream(
 
         yield from stream(url, timeout=timeout, max_retries=max_retries)
         seq_num += 1
+    
     return  # pylint: disable=R1711
 
 
@@ -174,6 +175,7 @@ def stream(
                 break
             tries += 1
 
+        # Get the proper file size
         if file_size == default_range_size:
             try:
                 resp = _execute_request(
@@ -185,12 +187,15 @@ def stream(
                 file_size = int(content_range)
             except (KeyError, IndexError, ValueError) as e:
                 logger.error(e)
+        
+        # Yield data from response
         while True:
             chunk = response.read()
             if not chunk:
                 break
             downloaded += len(chunk)
             yield chunk
+            
     return  # pylint: disable=R1711
 
 
