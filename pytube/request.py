@@ -127,6 +127,7 @@ def seq_stream(
 
         yield from stream(url, timeout=timeout, max_retries=max_retries)
         seq_num += 1
+    
     return  # pylint: disable=R1711
 
 
