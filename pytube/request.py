@@ -175,6 +175,7 @@ def stream(
                 break
             tries += 1
 
+        # Get the proper file size
         if file_size == default_range_size:
             try:
                 resp = _execute_request(
@@ -187,6 +188,7 @@ def stream(
             except (KeyError, IndexError, ValueError) as e:
                 logger.error(e)
         
+        # Yield data from response
         while True:
             chunk = response.read()
             if not chunk:
